@@ -1,5 +1,9 @@
 # Porthole
 
+<p align="center">
+  <img src="icon.png" width="120" alt="Porthole icon" />
+</p>
+
 A native macOS menubar app that shows every localhost server running on your machine — grouped, labeled, and one click away from opening in your browser.
 
 ![macOS 26+](https://img.shields.io/badge/macOS-26%2B-black?style=flat-square)
