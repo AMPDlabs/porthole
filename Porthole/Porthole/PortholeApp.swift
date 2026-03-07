@@ -10,8 +10,10 @@ struct PortholeApp: App {
                 .environmentObject(scanner)
         } label: {
             HStack(spacing: 4) {
-                Image(systemName: "network")
-                    .symbolRenderingMode(.hierarchical)
+                Image("MenuBarIcon")
+                    .renderingMode(.original)
+                    .resizable()
+                    .frame(width: 18, height: 18)
                 if !scanner.servers.isEmpty {
                     Text("\(scanner.servers.count)")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
