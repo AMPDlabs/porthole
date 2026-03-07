@@ -21,3 +21,4 @@ struct PortholeApp: App {
         .menuBarExtraStyle(.window)
     }
 }
+

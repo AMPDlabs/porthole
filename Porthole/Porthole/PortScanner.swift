@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 import Combine
 
 @MainActor
@@ -14,27 +15,27 @@ final class PortScanner: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.refresh()
+            Task { @MainActor in self?.refresh() }
         }
     }
 
     func start() {
         refresh()
         timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
-            self?.refresh()
+            Task { @MainActor in self?.refresh() }
         }
     }
 
     func refresh() {
-        Task.detached(priority: .background) {
-            let results = Self.scan()
-            await MainActor.run {
-                self.servers = results
-            }
+        Task {
+            let results = await Task.detached(priority: .background) {
+                PortScanner.scan()
+            }.value
+            self.servers = results
         }
     }
 
-    static func scan() -> [ServerProcess] {
+    nonisolated static func scan() -> [ServerProcess] {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/sbin/lsof")
         process.arguments = ["-iTCP", "-sTCP:LISTEN", "-n", "-P"]
@@ -56,7 +57,7 @@ final class PortScanner: ObservableObject {
         return parse(output: output)
     }
 
-    static func parse(output: String) -> [ServerProcess] {
+    nonisolated static func parse(output: String) -> [ServerProcess] {
         // lsof output format:
         // COMMAND   PID  USER  FD  TYPE  DEVICE  SIZE/OFF  NODE  NAME
         // node     1234  max  24u  IPv4  ...      TCP *:3000 (LISTEN)
