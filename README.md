@@ -1,4 +1,13 @@
-# Porthole
+```
+  ____  ___  ____  ____  _  _  _____  __    ____
+ (  _ \/ __)(  _ \(_  _)/ )( \(  _  )(  )  (  __)
+  ) __/\__ \ )   / _)(_) \/ ( )(_)(  )(__   ) _)
+ (__)  (___/(__\_)(____)\____/(_____)(____) (____)
+
+  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·
+        see what's listening on localhost
+  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·
+```
 
 A native macOS menubar app that shows every localhost server running on your machine — grouped, labeled, and one click away from opening in your browser.
 
