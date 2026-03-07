@@ -15,6 +15,7 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_26.0.app
 
       - name: Build
+        working-directory: Porthole
         run: |
           xcodebuild \
             -project Porthole.xcodeproj \
@@ -26,6 +27,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Zip app
+        working-directory: Porthole
         run: |
           cd build/Build/Products/Release
           zip -r Porthole.zip Porthole.app
@@ -33,6 +35,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/Build/Products/Release/Porthole.zip
+          files: Porthole/build/Build/Products/Release/Porthole.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
