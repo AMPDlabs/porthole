@@ -1,9 +1,18 @@
+# macOS
 .DS_Store
+
+# Xcode
 *.xcuserdata/
 xcuserdata/
 DerivedData/
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.xcarchive
 .build/
 *.o
 *.d
-Porthole/Porthole.xcodeproj/xcuserdata/
-Porthole/Porthole.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Internal docs
+docs/
