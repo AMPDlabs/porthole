@@ -52,9 +52,13 @@ Click any row to open `http://localhost:PORT` in your default browser.
 
 ## Install
 
-Download `Porthole.zip` from [Releases](../../releases/latest), unzip, and drag `Porthole.app` to `/Applications`.
+1. Go to [Releases](../../releases/latest) and download **`Porthole.zip`** (not the source code zips)
+2. Unzip it — you'll get `Porthole.app`
+3. Drag `Porthole.app` to your `/Applications` folder
+4. **First launch:** right-click `Porthole.app` → **Open** → **Open** (bypasses Gatekeeper for unsigned apps)
+5. Look for the Porthole icon in your menubar
 
-> **Note:** The app is currently unsigned. On first launch, right-click → Open to bypass Gatekeeper, or go to System Settings → Privacy & Security → Open Anyway.
+> **Note:** The app is unsigned. Step 4 is a one-time thing. Code signing + notarization is on the roadmap.
 
 ---
 
