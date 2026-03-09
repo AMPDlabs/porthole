@@ -42,7 +42,10 @@ enum KillButtonConstants {
     static let stopIconOpacity: Double  = 0.70
 
     // ── Category visibility ───────────────────────────────────────────────────
-    /// Which categories show the kill button. Add or remove categories here.
+    /// Which categories show the kill button. Currently enabled for Dev Servers,
+    /// Tools, and Unknown only — Databases and System are excluded to prevent
+    /// accidental data loss. To enable for other categories, simply add them
+    /// to this set (e.g. `.database`).
     static let killableCategories: Set<PortCategory> = [.devServer, .tool, .unknown]
 
     // ── Shared ───────────────────────────────────────────────────────────────
