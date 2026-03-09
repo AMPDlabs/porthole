@@ -34,6 +34,49 @@ final class PortScanner: ObservableObject {
         }
     }
 
+    // MARK: - Kill process
+
+    func kill(server: ServerProcess) {
+        // Resolve the PID: use the known PID, or look it up by port as fallback
+        let pid = server.pid > 0 ? server.pid : PortScanner.findPID(forPort: server.port)
+        guard pid > 0 else { return }
+
+        // POSIX kill(2) is a direct syscall — returns in microseconds, safe on main thread
+        let result = Foundation.kill(Int32(pid), SIGTERM)
+
+        // Only remove the row if the signal was sent successfully
+        if result == 0 {
+            servers.removeAll { $0.id == server.id }
+        }
+
+        // Rescan after a delay to confirm the process exited
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(1))
+            self?.refresh()
+        }
+    }
+
+    /// Look up PID for a port using lsof (fallback when pid is 0)
+    nonisolated static func findPID(forPort port: Int) -> Int {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/sbin/lsof")
+        process.arguments = ["-iTCP:\(port)", "-sTCP:LISTEN", "-t", "-n", "-P"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = Pipe()
+        do {
+            try process.run()
+        } catch { return 0 }
+        // Read before waitUntilExit to avoid pipe buffer deadlock
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        guard let output = String(data: data, encoding: .utf8) else { return 0 }
+        // Take only the first PID (the listening process)
+        let firstLine = output.trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: "\n").first ?? ""
+        return Int(firstLine) ?? 0
+    }
+
     // MARK: - lsof (primary)
 
     nonisolated static func scan() -> [ServerProcess] {
