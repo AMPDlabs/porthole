@@ -6,6 +6,7 @@ enum PortCategory: String, CaseIterable {
     case tool      = "Tools"
     case system    = "System"
     case unknown   = "Unknown"
+
 }
 
 struct ServerProcess: Identifiable, Equatable {
