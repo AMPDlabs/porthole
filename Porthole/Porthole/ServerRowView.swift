@@ -61,6 +61,17 @@ enum KillButtonConstants {
     static let stateSpring: Animation = .spring(response: 0.28, dampingFraction: 0.78)
 }
 
+enum NotificationConstants {
+    /// Duration of the glow pulse on new server rows.
+    static let newGlowDuration: Double = 1.5
+    /// Peak opacity of the glow overlay on new rows.
+    static let newGlowOpacity: Double = 0.25
+    /// Duration of the fade-out on departing rows.
+    static let departFadeDuration: Double = 0.5
+    /// Delay before removing a departing row from the array.
+    static let departRemovalDelay: Double = 0.6
+}
+
 // MARK: - Kill button view
 
 private struct KillButtonView: View {
