@@ -6,6 +6,7 @@ import Combine
 final class PortScanner: ObservableObject {
     @Published var servers: [ServerProcess] = []
     private var timer: Timer?
+    private var previousPorts: Set<Int> = []
 
     init() {
         start()
@@ -30,7 +31,49 @@ final class PortScanner: ObservableObject {
             let results = await Task.detached(priority: .background) {
                 PortScanner.scan()
             }.value
-            self.servers = results
+
+            let currentPorts = Set(results.map(\.port))
+            let newPorts = currentPorts.subtracting(previousPorts)
+
+            // Tag newly appeared servers
+            var tagged = results.map { server -> ServerProcess in
+                var s = server
+                if newPorts.contains(server.port) && !previousPorts.isEmpty {
+                    s.state = .new
+                }
+                return s
+            }
+
+            // Find departed servers (were in previous, not in current)
+            let departedPorts = previousPorts.subtracting(currentPorts)
+            let departingServers: [ServerProcess] = servers
+                .filter { departedPorts.contains($0.port) && $0.state != .departing }
+                .map {
+                    var s = $0
+                    s.state = .departing
+                    return s
+                }
+
+            // Keep existing departing servers (mid-animation) + add newly departing
+            let alreadyDeparting = servers.filter { $0.state == .departing && currentPorts.contains($0.port) == false }
+            let stillDeparting = alreadyDeparting.filter { existing in
+                !departingServers.contains { $0.port == existing.port }
+            }
+            tagged.append(contentsOf: departingServers)
+            tagged.append(contentsOf: stillDeparting)
+            tagged.sort { $0.port < $1.port }
+
+            self.servers = tagged
+            self.previousPorts = currentPorts
+
+            // Schedule removal of departing rows after animation
+            for server in departingServers {
+                let port = server.port
+                Task { @MainActor [weak self] in
+                    try? await Task.sleep(for: .seconds(NotificationConstants.departRemovalDelay))
+                    self?.servers.removeAll { $0.port == port && $0.state == .departing }
+                }
+            }
         }
     }
 
