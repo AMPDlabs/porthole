@@ -167,8 +167,8 @@ struct CategorySection: View {
                         .tracking(0.8)
                         .foregroundStyle(.secondary)
 
-                    // Count pill
-                    Text("\(servers.count)")
+                    // Count pill (exclude departing servers)
+                    Text("\(servers.filter { $0.state != .departing }.count)")
                         .font(.system(size: 9, weight: .semibold, design: .monospaced))
                         .foregroundStyle(category.color)
                         .padding(.horizontal, 5)
