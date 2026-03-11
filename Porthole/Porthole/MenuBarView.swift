@@ -204,6 +204,7 @@ struct CategorySection: View {
                     }
                 }
                 .padding(.top, 2)
+                .animation(.easeInOut(duration: 0.3), value: servers.map(\.port))
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
