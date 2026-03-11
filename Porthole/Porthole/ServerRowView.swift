@@ -230,6 +230,7 @@ struct ServerRowView: View {
     @EnvironmentObject var scanner: PortScanner
     @State private var isHovered = false
     @State private var isArmed = false
+    @State private var glowOpacity: Double = 0
 
     var dotColor: Color {
         server.category == .devServer
@@ -315,10 +316,27 @@ struct ServerRowView: View {
                     }
                 }
         }
+        .overlay {
+            if server.state == .new {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(server.category.color.opacity(glowOpacity))
+                    .allowsHitTesting(false)
+            }
+        }
+        .opacity(server.state == .departing ? 0 : 1)
+        .animation(.easeOut(duration: NotificationConstants.departFadeDuration), value: server.state)
         .contentShape(Rectangle())
         .onHover { hovering in
             withAnimation(.easeInOut(duration: KillButtonConstants.transitionDuration)) {
                 isHovered = hovering
+            }
+        }
+        .onAppear {
+            if server.state == .new {
+                glowOpacity = NotificationConstants.newGlowOpacity
+                withAnimation(.easeOut(duration: NotificationConstants.newGlowDuration)) {
+                    glowOpacity = 0
+                }
             }
         }
     }
