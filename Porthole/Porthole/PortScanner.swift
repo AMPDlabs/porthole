@@ -87,9 +87,16 @@ final class PortScanner: ObservableObject {
         // POSIX kill(2) is a direct syscall — returns in microseconds, safe on main thread
         let result = Foundation.kill(Int32(pid), SIGTERM)
 
-        // Only remove the row if the signal was sent successfully
+        // Transition to departing state instead of instant removal
         if result == 0 {
-            servers.removeAll { $0.id == server.id }
+            if let idx = servers.firstIndex(where: { $0.id == server.id }) {
+                servers[idx].state = .departing
+                let port = server.port
+                Task { @MainActor [weak self] in
+                    try? await Task.sleep(for: .seconds(NotificationConstants.departRemovalDelay))
+                    self?.servers.removeAll { $0.port == port && $0.state == .departing }
+                }
+            }
         }
 
         // Rescan after a delay to confirm the process exited
